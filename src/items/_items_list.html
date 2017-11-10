@@ -5,15 +5,15 @@
             <th>Name</th>
             <th>Part No</th>
             <th>Selling Price</th>
-            <th>Quantity</th>
+            <th>Quantity Available</th>
           </tr>
         </thead>
         <tbody>
             <tr ng-repeat="(key, value) in items">
-              <td>{{value.item_name}}</td>
-              <td>{{value.partno}}</td>
-              <td>{{value.item_price}}</td>
-              <td>{{value.item_quantity}}</td>
+              <td>{{ value.item_name }}</td>
+              <td>{{ value.partno }}</td>
+              <td>{{ value.item_price | currency }}</td>
+              <td>{{ value.item_quantity }}</td>
             </tr>
         </tbody>
   </table>

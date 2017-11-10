@@ -1,0 +1,39 @@
+<header>
+  <h1>
+    <small>New Sale</small>
+  </h1>
+</header>
+
+<div class="container">
+  <div class="row">
+  	<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+  	  <div class="panel panel-default">
+  	  	
+        <div class="panel-heading">
+  	  	</div>
+  	  	
+        <div class="panel-body">
+
+  	  	  <!-- Nav tabs -->
+  	  	  <ul class="nav nav-tabs">
+  	  	  	<li class="active"><a href="#sell-item" data-toggle="tab">Sale</a></li>
+  	  	  	
+  	  	  </ul>
+
+  	  	  <!-- Tab panes -->
+  	  	  <div class="tab-content">
+  	  	  	<div class="tab-pane active" id="sell-item">
+  	  	  	  <ng-include src="'/sales/_sale_items.html'"></ng-include>
+  	  	  	</div>
+  	  	  </div>
+
+  	  	</div>
+  	  </div>
+  	  
+  	</div>
+  	<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+  	  <!-- sale slip -->
+  	  <ng-include src="'/sales/_sale_slip.html'"></ng-include>
+  	</div>
+  </div>
+</div>
