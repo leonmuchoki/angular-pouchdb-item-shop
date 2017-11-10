@@ -1,0 +1,36 @@
+<html>
+  <head>
+  	<title>Alexis Store</title>
+  	<script src="bower_components/angular/angular.js"></script>
+  	<script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+  	<script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+  	<script src="bower_components/pouchdb/dist/pouchdb.min.js"></script>
+  	<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+  </head>
+  <body ng-app="store">
+    
+    <nav-bar></nav-bar>
+
+  	<div class="container">  
+  	  <div class="row">
+        
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+          <side-bar></side-bar>
+        </div>
+        
+        <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+          <ui-view></ui-view>
+        </div> 
+      
+      </div>
+  	</div>
+
+  	<script src="app.js"></script>
+  	<script src="items/item.controller.js"></script>
+  	<script src="services/pouchdb_service.js"></script>
+    <script src="nav/navComponent.js"></script>
+    <script src="nav/sideBarComponent.js"></script>
+    <link rel="stylesheet" href="nav/sidebar.css">
+  </body>
+</html>
