@@ -10,6 +10,7 @@ angular.module("store")
     $rootScope.$on("pouchDB:change", function(event, data) {
         $scope.items[data.doc._id] = data.doc;
         $scope.$apply();
+        console.log("data-->>" + JSON.stringify(data));
     });
  
 
@@ -26,6 +27,7 @@ angular.module("store")
  
     $scope.save = function(item_name, partno, item_price, item_quantity) {
         var jsonDocument = {
+            "_id": ("items:"+ ( new Date() ).getTime()),
             "item_name": item_name,
             "partno": partno,
             "item_price": item_price,

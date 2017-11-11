@@ -1,7 +1,7 @@
 <div class="panel panel-default">
 
   <div class="panel-heading">
-  	<h4>Confirm Items Sold and Save</h4>
+  	<h4>Confirm Items Sold and Submit</h4>
   </div>
 
   <div class="panel-body">
@@ -10,28 +10,34 @@
 		<thead>
 			<tr>
 			  <th>Name</th>
+        <th>Part no</th>
 			  <th>Amount</th>
 			  <th>Quantity Ordered</th>
 			</tr>
 		</thead>
-		 <tfoot>
+		<tbody>
+      <tr ng-repeat="(key, value) in sold_items">
+        <td><span ng-model="name">{{value.item_name}}</span></td>
+        <td><span ng-model="partno">{{value.partno}}</span></td>
+        <td><span ng-model="price">{{value.item_price | currency}}</span></td>
+        <td><span ng-model="quantity">{{value.item_quantity}}</span></td>
+      </tr>
+		</tbody>
+     <tfoot>
           <tr>
             <td id="table-sell-slip-footer">
-            	<h3 style="color:green;">{{total_amount | currency}}</h3>
+              <h3 style="color:green;">{{total_amount | currency}}</h3>
             </td>
           </tr>
           <tr>
-          	<td><button type="button" class="btncancel btn-danger btn-xs" id="btn-sell-slip-cancel">CANCEL</button></td>
-          	<td><button type="button" class="btnsubmit btn-primary btn-xs" id="btn-sell-slip-submit">SUBMIT</button></td>
+            <td>
+              <button type="button" class="btncancel btn-danger btn-xs" id="btn-sell-slip-cancel">CANCEL</button>
+            </td>
+            <td>
+              <button type="button" class="btnsubmit btn-primary btn-xs" id="btn-sell-slip-submit" ng-click="saveSoldItems()">SUBMIT</button>
+            </td>
           </tr>
         </tfoot>
-		<tbody>
-      <tr ng-repeat="(key, value) in sold_items">
-        <td>{{value.item_name}}</td>
-        <td>{{value.item_price | currency}}</td>
-        <td>{{value.item_quantity}}</td>
-      </tr>
-		</tbody>
 	</table>
 	</div>
   </div>

@@ -17,14 +17,14 @@
               </td>
               <td>{{ value.partno }}</td>
               <td>
-                <input type="number" ng-model="inputform.price" ng-init="inputform.price=value.item_price" id="price">
+                <input type="number" ng-model="inputform.price" ng-init="inputform.price=value.item_price" id="price" style="width:100px;">
               </td>
               <td>{{ value.item_quantity }}</td>
               <td>
-                 <input type="number" ng-model="inputform.quantity" id="quantity" placeholder="1" ng-init="inputform.quantity=1">
+                 <input type="number" ng-model="inputform.quantity" id="quantity" placeholder="1" ng-init="inputform.quantity=1" style="width:100px;">
               </td>
               <td>
-                <input type="submit" ng-click="addToSlip(value.item_name,inputform.price,inputform.quantity)" class="btn btn-link" value="Add">
+                <input type="submit" ng-click="addToSlip(value.item_name,value.partno,inputform.price,inputform.quantity)" class="btn btn-link" value="Add">
               </td>
             </tr>
         </tbody>

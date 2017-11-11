@@ -27,23 +27,26 @@ angular.module("store")
         });
     }
  
-    $scope.save = function(item_name, partno, item_price, item_quantity) {
-        var jsonDocument = {
-            "item_name": item_name,
-            "partno": partno,
-            "item_price": item_price,
-            "item_quantity": item_quantity
-        };
-        if($stateParams.documentId) {
-            jsonDocument["'_id'"] = $stateParams.documentId;
-            jsonDocument["'_rev'"] = $stateParams.documentRevision;
-        }
-        pouchDB.save(jsonDocument).then(function(response) {
-            $state.go("items");
-            console.log('saved successfully.');
-        }, function(error) {
-            console.log("ERROR -> " + error);
-        });
+    $scope.saveSoldItems = function() {
+        var soldItemsArrayObject = $scope.sold_items;
+        
+         angular.forEach(soldItemsArrayObject, function(value, key) {
+          console.log("key:-" + key + " value:-" + JSON.stringify(value));
+          
+          pouchDB.save(value).then(function(response) {
+             $state.go("items");
+             console.log('saved successfully.');
+             }, function(error) {
+                console.log("ERROR -> " + error);
+             });
+           });
+
+        // console.log("saveSoldItems:>>>>" + $scope.sold_items);
+        // if($stateParams.documentId) {
+        //     jsonDocument["'_id'"] = $stateParams.documentId;
+        //     jsonDocument["'_rev'"] = $stateParams.documentRevision;
+        // }
+        
     };
  
     $scope.delete = function(id, rev) {
@@ -51,13 +54,15 @@ angular.module("store")
     };
     
     var sub_total = 0.00;
-    $scope.addToSlip = function(itemname,itemprice, itemquantity) {
+    $scope.addToSlip = function(itemname,partno,itemprice, itemquantity) {
         
         var amount = itemprice * itemquantity;
         sub_total = sub_total + amount;
 
         $scope.sold_items.push({
+          "_id": ("sales:"+ ( new Date() ).getTime()),
           "item_name": itemname,
+          "partno": partno,
           "item_price": amount,
           "item_quantity": itemquantity
         });
