@@ -1,0 +1,22 @@
+<div class="table-responsive">
+  <table class="table table-hover" id="table-sold-items-list">
+    <thead>
+          <tr>
+            <!-- <th>id</th> -->
+            <th>Name</th>
+            <th>Part No</th>
+            <th>Sold at</th>
+            <th>Quantity Sold</th>
+          </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="(key, value) in items_sold">
+              <!-- <td>{{value._id}}</td> -->
+              <td>{{ value.item_name }}</td>
+              <td>{{ value.partno }}</td>
+              <td>{{ value.item_price | currency }}</td>
+              <td>{{ value.item_quantity }}</td>
+            </tr>
+        </tbody>
+  </table>
+</div>

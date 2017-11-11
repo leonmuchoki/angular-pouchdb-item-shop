@@ -4,14 +4,36 @@ angular.module("store")
   	var vm = this;
 
   	$scope.items = {};
+    $scope.items_sold = {};
 
     $scope.sold_items = [];
     $scope.total_amount = 0.00;
  
     pouchDB.startListening();
- 
-    $rootScope.$on("pouchDB:change", function(event, data) {
+    
+    //--------------------------------------
+    //fetch all items
+    //--------------------------------------
+    pouchDB.getAll("items:","items:\uffff").then(function(data) {
+      data.rows.map(function(data) {
         $scope.items[data.doc._id] = data.doc;
+        console.log("items juu data-->>" + JSON.stringify(data));
+        console.log("items data-->>" + JSON.stringify(data.doc));
+       });
+    });
+
+     //--------------------------------------
+    //fetch sold items
+    //--------------------------------------
+    pouchDB.getAll("sales:","sales:\uffff").then(function(data) {
+      data.rows.map(function(data) {
+        $scope.items_sold[data.doc._id] = data.doc;
+       });
+    });
+
+    $rootScope.$on("pouchDB:change", function(event, data) {
+     // $scope.items[data.doc._id] = data.doc;
+
         $scope.$apply();
     });
  
@@ -32,7 +54,7 @@ angular.module("store")
         
          angular.forEach(soldItemsArrayObject, function(value, key) {
           console.log("key:-" + key + " value:-" + JSON.stringify(value));
-          
+
           pouchDB.save(value).then(function(response) {
              $state.go("items");
              console.log('saved successfully.');
@@ -40,12 +62,6 @@ angular.module("store")
                 console.log("ERROR -> " + error);
              });
            });
-
-        // console.log("saveSoldItems:>>>>" + $scope.sold_items);
-        // if($stateParams.documentId) {
-        //     jsonDocument["'_id'"] = $stateParams.documentId;
-        //     jsonDocument["'_rev'"] = $stateParams.documentRevision;
-        // }
         
     };
  

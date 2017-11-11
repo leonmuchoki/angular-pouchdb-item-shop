@@ -54,6 +54,22 @@ angular.module("store")
     this.get = function(documentId) {
         return database.get(documentId);
     };
+
+    this.getAll = function(start_key, end_key) {
+      var deferred = $q.defer();
+
+      database.allDocs({
+          include_docs: true,
+          startkey: start_key,
+          endkey: end_key
+        }).then(function(response) {
+             deferred.resolve(response);
+        }, function(error) {
+            deferred.reject(error);
+        });
+
+        return deferred.promise;
+    };
  
     this.destroy = function() {
         database.destroy();

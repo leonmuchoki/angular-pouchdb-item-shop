@@ -17,6 +17,7 @@
   	  	  <!-- Nav tabs -->
   	  	  <ul class="nav nav-tabs">
   	  	  	<li class="active"><a href="#sell-item" data-toggle="tab">Sell</a></li>
+            <li><a href="#sold-items-view" data-toggle="tab">Sold Items</a></li>
   	  	  </ul>
 
   	  	  <!-- Tab panes -->
@@ -24,6 +25,9 @@
   	  	  	<div class="tab-pane active" id="sell-item">
   	  	  	  <ng-include src="'/sales/_sale_items.html'"></ng-include>
   	  	  	</div>
+            <div class="tab-pane" id="sold-items-view">
+              <ng-include src="'/sales/_sold_items.html'"></ng-include>
+            </div>
   	  	  </div>
 
   	  	</div>

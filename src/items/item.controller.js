@@ -6,11 +6,22 @@ angular.module("store")
   	$scope.items = {};
  
     pouchDB.startListening();
+
+        //--------------------------------------
+    //fetch all items
+    //--------------------------------------
+    pouchDB.getAll("items:","items:\uffff").then(function(data) {
+      data.rows.map(function(data) {
+        $scope.items[data.doc._id] = data.doc;
+        //console.log("items juu data-->>" + JSON.stringify(data));
+        //console.log("items data-->>" + JSON.stringify(data.doc));
+       });
+    });
  
     $rootScope.$on("pouchDB:change", function(event, data) {
-        $scope.items[data.doc._id] = data.doc;
+        //$scope.items[data.doc._id] = data.doc;
         $scope.$apply();
-        console.log("data-->>" + JSON.stringify(data));
+       //console.log("item.controller:::data-->>" + JSON.stringify(data));
     });
  
 
@@ -20,7 +31,7 @@ angular.module("store")
     });
  
     if($stateParams.documentId) {
-        $pouchDB.get($stateParams.documentId).then(function(result) {
+        pouchDB.get($stateParams.documentId).then(function(result) {
             $scope.inputForm = result;
         });
     }
