@@ -18,6 +18,8 @@
     "angular": "^1.6.6",
     "angular-ui-router": "^1.0.10",
     "bootstrap": "^3.3.7",
-    "pouchdb": "^6.3.4"
+    "pouchdb": "^6.3.4",
+    "angular-moment": "^1.1.0",
+    "moment": "^2.19.2"
   }
 }

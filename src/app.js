@@ -1,4 +1,4 @@
-angular.module("store", ["ui.router"])
+angular.module("store", ["ui.router","angularMoment"])
   .run(function(pouchDB) {
   	pouchDB.setDatabase("alexis-store");
   })

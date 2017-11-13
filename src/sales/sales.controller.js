@@ -1,6 +1,6 @@
 angular.module("store")
-  .controller("SaleCtrl", ['$scope','$rootScope','$state','$stateParams','pouchDB', 
-  	           function($scope,$rootScope,$state,$stateParams,pouchDB) {
+  .controller("SaleCtrl", ['$scope','$rootScope','$state','$stateParams','pouchDB','moment', 
+  	           function($scope,$rootScope,$state,$stateParams,pouchDB,moment) {
   	var vm = this;
 
   	$scope.items = {};
@@ -80,7 +80,8 @@ angular.module("store")
           "item_name": itemname,
           "partno": partno,
           "item_price": amount,
-          "item_quantity": itemquantity
+          "item_quantity": itemquantity,
+          "created_at": (new Date())
         });
 
         // update total amount

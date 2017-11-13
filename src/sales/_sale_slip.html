@@ -9,18 +9,18 @@
 	<table class="table table-hover" id="table-sell-slip">
 		<thead>
 			<tr>
-			  <th>Name</th>
-        <th>Part no</th>
-			  <th>Amount</th>
-			  <th>Quantity Ordered</th>
+			  <th style="width="150px;">Name</th>
+        <th style="width="100px;">Part no</th>
+			  <th style="width="100px;">Amount</th>
+			  <th style="width="100px;">Quantity Ordered</th>
 			</tr>
 		</thead>
 		<tbody>
       <tr ng-repeat="(key, value) in sold_items">
-        <td><span ng-model="name">{{value.item_name}}</span></td>
-        <td><span ng-model="partno">{{value.partno}}</span></td>
-        <td><span ng-model="price">{{value.item_price | currency}}</span></td>
-        <td><span ng-model="quantity">{{value.item_quantity}}</span></td>
+        <td style="width="150px;"><span ng-model="name">{{value.item_name}}</span></td>
+        <td style="width="100px;"><span ng-model="partno">{{value.partno}}</span></td>
+        <td style="width="100px;"><span ng-model="price">{{value.item_price | currency}}</span></td>
+        <td style="width="100px;"><span ng-model="quantity">{{value.item_quantity}}</span></td>
       </tr>
 		</tbody>
      <tfoot>

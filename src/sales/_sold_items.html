@@ -7,6 +7,7 @@
             <th>Part No</th>
             <th>Amount</th>
             <th>Quantity Sold</th>
+            <th>Date</th>
           </tr>
         </thead>
         <tbody>
@@ -16,6 +17,7 @@
               <td>{{ value.partno }}</td>
               <td>{{ value.item_price | currency }}</td>
               <td>{{ value.item_quantity }}</td>
+              <td><span am-time-ago="value.created_at"></span></td>
             </tr>
         </tbody>
   </table>

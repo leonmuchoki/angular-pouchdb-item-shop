@@ -5,11 +5,15 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "http-server ./src/"
+    "start": "http-server ./src/",
+    "dist": "build"
   },
   "author": "leon muchoki",
   "license": "ISC",
   "devDependencies": {
+    "electron": "^1.7.9",
+    "electron-builder": "^19.45.4",
+    "electron-packager": "^9.1.0",
     "gulp": "^3.9.1",
     "http-server": "^0.10.0"
   },
@@ -23,5 +27,12 @@
     "gulp-uglify": "^3.0.0",
     "jshint": "^2.9.5",
     "run-sequence": "^2.2.0"
+  },
+  "build": {
+     "appId": "com.leon.lebizz",
+     "win": {
+        "target": "nsis",
+        "icon": "build/favicon.ico"
+     }
   }
 }
