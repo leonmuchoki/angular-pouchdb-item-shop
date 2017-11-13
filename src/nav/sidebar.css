@@ -23,3 +23,18 @@
     padding: 20px 30px;
     margin: 10px;
 }
+
+@media only screen and (max-width: 768px) {
+	.sidebar {
+		display: none;
+	}
+	.nav-side-bar-links {
+		display: inline-block;
+	}
+}
+
+@media only screen and (min-width: 768px) {
+	.nav-side-bar-links {
+		display: none;
+	}
+}
