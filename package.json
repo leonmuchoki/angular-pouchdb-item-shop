@@ -2,7 +2,7 @@
   "name": "alexis",
   "version": "1.0.0",
   "description": "alexis store and inventory management",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "http-server ./src/"
