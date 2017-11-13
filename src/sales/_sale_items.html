@@ -24,7 +24,7 @@
                  <input type="number" ng-model="inputform.quantity" id="quantity" placeholder="1" ng-init="inputform.quantity=1" style="width:100px;">
               </td>
               <td>
-                <input type="submit" ng-click="addToSlip(value.item_name,value.partno,inputform.price,inputform.quantity)" class="btn btn-link" value="Add">
+                <input type="submit" ng-click="addToSlip(value._id,value._rev,value.item_name,value.partno,inputform.price,inputform.quantity,value.item_quantity)" class="btn btn-link" value="Add">
               </td>
             </tr>
         </tbody>

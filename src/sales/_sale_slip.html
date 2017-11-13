@@ -17,10 +17,10 @@
 		</thead>
 		<tbody>
       <tr ng-repeat="(key, value) in sold_items">
-        <td style="width="150px;"><span ng-model="name">{{value.item_name}}</span></td>
-        <td style="width="100px;"><span ng-model="partno">{{value.partno}}</span></td>
-        <td style="width="100px;"><span ng-model="price">{{value.item_price | currency}}</span></td>
-        <td style="width="100px;"><span ng-model="quantity">{{value.item_quantity}}</span></td>
+        <td style="width="150px;"><span ng-model="update.name">{{value.item_name}}</span></td>
+        <td style="width="100px;"><span ng-model="update.partno">{{value.partno}}</span></td>
+        <td style="width="100px;"><span ng-model="update.price">{{value.item_price | currency}}</span></td>
+        <td style="width="100px;"><span ng-model="update.quantity">{{value.item_quantity}}</span></td>
       </tr>
 		</tbody>
      <tfoot>
@@ -34,7 +34,7 @@
               <button type="button" class="btncancel btn-danger btn-lg" id="btn-sell-slip-cancel">CANCEL</button>
             </td>
             <td>
-              <button type="button" class="btnsubmit btn-primary btn-lg" id="btn-sell-slip-submit" ng-click="saveSoldItems()">SUBMIT</button>
+              <button type="button" class="btnsubmit btn-primary btn-lg" id="btn-sell-slip-submit" ng-click="saveSoldItems();updateQuantitySold()">SUBMIT</button>
             </td>
           </tr>
         </tfoot>
