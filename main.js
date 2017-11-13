@@ -13,7 +13,8 @@ function createWindow() {
   win = new BrowserWindow({
                            width: 1400, 
                            height: 1000,
-                           "nodeIntegration": false
+                           "nodeIntegration": false,
+                           icon: path.join(__dirname, 'src/icons/favicon.ico')
                          });
 
   // and load the index.html of the app
