@@ -56,7 +56,7 @@ angular.module("store")
           console.log("key:-" + key + " value:-" + JSON.stringify(value));
 
           pouchDB.save(value).then(function(response) {
-             $state.go("items");
+             $state.reload();
              console.log('saved successfully.');
              }, function(error) {
                 console.log("ERROR -> " + error);

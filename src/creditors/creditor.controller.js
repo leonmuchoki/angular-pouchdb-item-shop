@@ -48,7 +48,7 @@ angular.module("store")
             jsonDocument["'_rev'"] = $stateParams.documentRevision;
         }
         pouchDB.save(jsonDocument).then(function(response) {
-            $state.go("items");
+            $state.reload();
             console.log('saved successfully.');
         }, function(error) {
             console.log("ERROR -> " + error);
