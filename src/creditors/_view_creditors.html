@@ -8,6 +8,7 @@
             <th>Item Name</th>
             <th>Quantity</th>
             <th>Amount</th>
+            <th>Clear creditor</th>
           </tr>
         </thead>
         <tbody>
@@ -18,6 +19,11 @@
               <td>{{ value.item_name }}</td>
               <td>{{ value.item_quantity }}</td>
               <td>{{ value.item_amount | currency }}</td>
+              <td>
+                <a ng-click="delete(value._id,value._rev)">
+                  <span class="glyphicon glyphicon-remove-sign"></span>
+                </a>
+              </td>
             </tr>
         </tbody>
   </table>

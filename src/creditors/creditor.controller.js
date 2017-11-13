@@ -57,5 +57,6 @@ angular.module("store")
  
     $scope.delete = function(id, rev) {
         pouchDB.delete(id, rev);
+        console.log("creditor cleared!");
     };
   }]);

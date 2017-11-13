@@ -7,6 +7,7 @@
             <th>Part No</th>
             <th>Selling Price</th>
             <th>Quantity Available</th>
+            <th>Delete Item</th>
           </tr>
         </thead>
         <tbody>
@@ -16,6 +17,11 @@
               <td>{{ value.partno }}</td>
               <td>{{ value.item_price | currency }}</td>
               <td>{{ value.item_quantity }}</td>
+              <td>
+                <a ng-click="delete(value._id,value._rev)">
+                  <span class="glyphicon glyphicon-remove-sign"></span>
+                </a>
+              </td>
             </tr>
         </tbody>
   </table>
