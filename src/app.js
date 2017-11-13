@@ -18,6 +18,11 @@ angular.module("store", ["ui.router"])
         "url": "/sale",
         "templateUrl": "sales/sale.html",
         "controller": "SaleCtrl"
+      })
+      .state("creditors", {
+        "url": "/creditor",
+        "templateUrl": "creditors/creditor.html",
+        "controller": "CreditorCtrl"
       });
 
   	$urlRouterProvider.otherwise("items");

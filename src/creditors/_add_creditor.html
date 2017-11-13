@@ -1,0 +1,28 @@
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+     <form>
+        <div class="form-group">
+          <label for="creditor_name">Creditor Name</label>
+          <input type="text" class="form-control" id="creditor_name" placeholder="Full Names" ng-model="inputForm.creditorname">
+        </div>
+        <div class="form-group">
+          <label for="mobileno">Mobile No</label>
+          <input type="number" class="form-control" id="mobileno" placeholder="Mobile No" ng-model="inputForm.mobileno">
+        </div>
+        <div class="form-group">
+          <label for="item_name">Item Taken</label>
+          <input type="text" class="form-control" id="item_name" placeholder="item name" ng-model="inputForm.item_name">
+        </div>
+         <div class="form-group">
+          <label for="item_qty">Quantity Taken</label>
+          <input type="number" class="form-control" id="item_qty" placeholder="Quantity" ng-model="inputForm.item_qty">
+        </div>
+        <div class="form-group">
+          <label for="item_amount">Amount</label>
+          <input type="number" class="form-control" id="item_amount" placeholder="Amount" ng-model="inputForm.amount">
+        </div>
+        <button type="button" class="btn btn-danger" ui-sref="items">Cancel</button>
+        <button type="button" class="btn btn-success btn-lg" ng-click="save(inputForm.creditorname, inputForm.mobileno, inputForm.item_name,inputForm.item_qty,inputForm.amount)">Save</button>
+     </form>
+   </div>
+</div>
