@@ -1,9 +1,9 @@
 angular.module("store")
   .controller("ItemCtrl", ['$scope','$rootScope','$state','$stateParams','pouchDB', 
-  	           function($scope,$rootScope,$state,$stateParams,pouchDB) {
-  	var vm = this;
+               function($scope,$rootScope,$state,$stateParams,pouchDB) {
+    var vm = this;
 
-  	$scope.items = {};
+    $scope.items = {};
  
     pouchDB.startListening();
 
@@ -13,8 +13,6 @@ angular.module("store")
     pouchDB.getAll("items:","items:\uffff").then(function(data) {
       data.rows.map(function(data) {
         $scope.items[data.doc._id] = data.doc;
-        //console.log("items juu data-->>" + JSON.stringify(data));
-        //console.log("items data-->>" + JSON.stringify(data.doc));
        });
     });
  
@@ -56,8 +54,32 @@ angular.module("store")
             console.log("ERROR -> " + error);
         });
     };
+
+    $scope.updateQty = function(id,rev,item_name, partno, item_price, item_quantity, added_quantity) {
+        var updateDocument = {
+            "_id": id,
+            "_rev": rev,
+            "item_name": item_name,
+            "partno": partno,
+            "item_price": item_price,
+            "item_quantity": (item_quantity + added_quantity)
+        };
+        
+        pouchDB.save(updateDocument).then(function(response) {
+            //$state.go("sale");
+            $state.reload();
+            console.log('saved successfully.');
+        }, function(error) {
+            console.log("ERROR -> " + error);
+        });
+    };
  
     $scope.delete = function(id, rev) {
       pouchDB.delete(id, rev);
     };
+
+    $scope.clear = function() {
+      $state.reload();
+    };
+    
   }]);
