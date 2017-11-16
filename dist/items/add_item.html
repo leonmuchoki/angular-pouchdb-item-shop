@@ -1,0 +1,24 @@
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+     <form>
+        <div class="form-group">
+          <label for="item_name">Item Name</label>
+          <input type="text" class="form-control" id="item_name" placeholder="Item Name" ng-model="inputForm.itemname">
+        </div>
+        <div class="form-group">
+          <label for="partno">Part No</label>
+          <input type="text" class="form-control" id="partno" placeholder="Part No" ng-model="inputForm.partno">
+        </div>
+        <div class="form-group">
+          <label for="item_price">Item Price</label>
+          <input type="number" class="form-control" id="item_price" placeholder="Price" ng-model="inputForm.item_price">
+        </div>
+         <div class="form-group">
+          <label for="item_qty">Item Quantity</label>
+          <input type="number" class="form-control" id="item_qty" placeholder="Quantity" ng-model="inputForm.item_qty">
+        </div>
+        <button type="button" class="btn btn-danger btn-lg" ui-sref="items">Cancel</button>
+        <button type="button" class="btn btn-success btn-lg" ng-click="save(inputForm.itemname, inputForm.partno, inputForm.item_price,inputForm.item_qty)">Save</button>
+     </form>
+   </div>
+</div>

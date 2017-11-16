@@ -3,20 +3,22 @@
     <thead>
           <tr>
             <!-- <th>id</th> -->
-            <th>Name</th>
-            <th>Part No</th>
-            <th>Selling Price</th>
-            <th>Quantity Available</th>
-            <th>Delete Item</th>
+            <th>Creditor Name</th>
+            <th>Mobile No</th>
+            <th>Item Name</th>
+            <th>Quantity</th>
+            <th>Amount</th>
+            <th>Clear creditor</th>
           </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="(key, value) in items" ng-class="{'highlight-red': value.item_quantity == 1}">
+            <tr ng-repeat="(key, value) in creditors">
               <!-- <td>{{value._id}}</td> -->
+              <td>{{ value.creditor_name }}</td>
+              <td>{{ value.mobileno }}</td>
               <td>{{ value.item_name }}</td>
-              <td>{{ value.partno }}</td>
-              <td>{{ value.item_price | currency }}</td>
               <td>{{ value.item_quantity }}</td>
+              <td>{{ value.item_amount | currency }}</td>
               <td>
                 <a ng-click="delete(value._id,value._rev)">
                   <span class="glyphicon glyphicon-remove-sign"></span>

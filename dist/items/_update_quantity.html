@@ -1,0 +1,28 @@
+<div class="table-responsive">
+  <table class="table table-hover" id="table-sale-items">
+    <thead>
+          <tr>
+            <th>Name</th>
+            <th>Part No</th>
+            <th>Quantity Remaining</th>
+            <th>Quantity To Add</th>
+            <th>Add</th>
+          </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="(key, value) in items">
+              <td id="table-sale-items-name">
+                {{ value.item_name }}
+              </td>
+              <td>{{ value.partno }}</td>
+              <td>{{ value.item_quantity }}</td>
+              <td>
+                 <input type="number" ng-model="inputform.quantity" id="quantity" placeholder="1" ng-init="inputform.quantity=1" style="width:100px;">
+              </td>
+              <td>
+                <input type="submit" class="btn btn-link" value="UPDATE" ng-click="updateQty(value._id,value._rev,value.item_name,value.partno,value.item_price,value.item_quantity,inputform.quantity)">
+              </td>
+            </tr>
+        </tbody>
+  </table>
+</div>
