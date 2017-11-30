@@ -20,6 +20,22 @@
     "bootstrap": "^3.3.7",
     "pouchdb": "^6.3.4",
     "angular-moment": "^1.1.0",
-    "moment": "^2.19.2"
+    "moment": "^2.19.2",
+    "angular-material": "^1.1.5",
+    "material-design-icons": "^3.0.1"
+  },
+  "devDependencies": {
+    "bootstrap-sass": "^3.3.7"
+  },
+  "overrides": {
+    "bootstrap": {
+      "main": ["dist/js/bootstrap.js", "dist/css/bootstrap.css"]
+    },
+    "material-design-icons": {
+      "main": ["iconfont/material-icons.css",
+               "iconfont/MaterialIcons-Regular.woff2",
+               "iconfont/MaterialIcons-Regular.woff",
+               "iconfont/MaterialIcons-Regular.ttf"]
+    }
   }
 }

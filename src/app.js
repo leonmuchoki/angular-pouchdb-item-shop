@@ -1,4 +1,4 @@
-angular.module("store", ["ui.router","angularMoment"])
+angular.module("store", ["ui.router","angularMoment","ngMaterial"])
   .run(function(pouchDB) {
   	pouchDB.setDatabase("alexis-store");
   })
@@ -26,4 +26,11 @@ angular.module("store", ["ui.router","angularMoment"])
       });
 
   	$urlRouterProvider.otherwise("items");
+  })
+
+  .filter('offset', function() {
+    return function(input, start) {
+      start = parseInt(start, 10);
+      return input.slice(start);
+    };
   });

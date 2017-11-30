@@ -4,11 +4,15 @@ angular.module("store")
   	var vm = this;
 
   	$scope.items = {};
+    $scope.all_items = [];
     $scope.items_sold = {};
     $scope.update_items = [];
 
     $scope.sold_items = [];
     $scope.total_amount = 0.00;
+
+    $scope.itemsPerPage = 5;
+    $scope.currentPage = 0;
  
     pouchDB.startListening();
     
@@ -18,8 +22,8 @@ angular.module("store")
     pouchDB.getAll("items:","items:\uffff").then(function(data) {
       data.rows.map(function(data) {
         $scope.items[data.doc._id] = data.doc;
-        console.log("items juu data-->>" + JSON.stringify(data));
-        console.log("items data-->>" + JSON.stringify(data.doc));
+        // remove key as we don't need it for now:
+         $scope.all_items.push( $scope.items[data.doc._id]);
        });
     });
 
@@ -127,4 +131,53 @@ angular.module("store")
           "item_quantity": (old_quantity - itemquantity)
         });
     };
+
+    //----------------------------------
+    // pagination
+    //----------------------------------
+    $scope.range = function() {
+      var rangeSize = 5;
+      var ret = [];
+      var start;
+
+      start = $scope.currentPage;
+      if ( start > $scope.pageCount()-rangeSize ) {
+        start = $scope.pageCount()-rangeSize+1;
+      }
+
+      for (var i=start; i<start+rangeSize;i++) {
+        ret.push(i);
+      }
+
+      return ret;
+    };
+
+    $scope.prevPage = function() {
+      if ($scope.currentPage > 0) {
+        $scope.currentPage--;
+      }
+    };
+
+    $scope.prevPageDisabled = function() {
+      return $scope.currentPage === 0 ? "disabled" : "";
+    };
+
+    $scope.pageCount = function() {
+      return Math.ceil($scope.all_items.length/$scope.itemsPerPage) - 1;
+    };
+
+    $scope.nextPage = function() {
+      if ($scope.currentPage < $scope.pageCount()) {
+        $scope.currentPage++;
+      }
+    };
+
+    $scope.nextPageDisabled = function() {
+      return $scope.currentPage === $scope.pageCount() ? "disabled" : "";
+    };
+
+    $scope.setPage = function(n) {
+      $scope.currentPage = n;
+    };
+    
   }]);

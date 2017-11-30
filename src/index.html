@@ -3,29 +3,14 @@
   <head>
     <meta charset="utf-8">
   	<title>Alexis Store</title>
-    <!-- build:css styles/vendor.css -->
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
-    <!-- endbuild -->
+    
+    <!-- bower:js -->
+    <!-- endinject -->
 
-    <!-- build:js js/vendor.js -->
-  	<script src="bower_components/angular/angular.js"></script>
-  	<script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <script src="bower_components/pouchdb/dist/pouchdb.min.js"></script>
-    <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script>window.jQuery = window.$ = module.exports</script>
-    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="bower_components/moment/min/moment.min.js"></script>
-    <script src="bower_components/angular-moment/angular-moment.min.js"></script>
-    <!-- endbuild -->
-
-    <link rel="icon" type="image/png" sizes="192x192"  href="icons/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="icons/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="icon/favicon-16x16.png">
-    <link rel="manifest" href="icons/manifest.json">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="icons/ms-icon-144x144.png">
-    <meta name="theme-color" content="#ffffff">
+    <!-- bower:css -->
+    <!-- endinject -->
+    <!-- inject:css -->
+    <!-- endinject -->
   </head>
   <body ng-app="store">
     
@@ -45,20 +30,8 @@
       </div>
   	</div>
 
-    <!-- build:js js/scripts.js -->
-  	<script src="app.js"></script>
-  	<script src="items/item.controller.js"></script>
-    <script src="sales/sales.controller.js"></script>
-    <script src="creditors/creditor.controller.js"></script>
-  	<script src="services/pouchdb_service.js"></script>
-    <script src="nav/navComponent.js"></script>
-    <script src="nav/sideBarComponent.js"></script>
-    <!-- endbuild -->
-
-    <!-- build:css styles/main.css -->
-    <link rel="stylesheet" href="nav/sidebar.css">
-    <link rel="stylesheet" href="items/item.css">
-    <!-- endbuild -->
+   <!-- inject:js -->
+   <!-- endinject -->
 
   </body>
 </html>

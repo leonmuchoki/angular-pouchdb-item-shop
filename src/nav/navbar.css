@@ -1,0 +1,4 @@
+.sync-navbar {
+  display: flex;
+  flex-direction: column;
+}

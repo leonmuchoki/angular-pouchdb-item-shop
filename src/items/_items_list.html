@@ -1,4 +1,12 @@
+  <!-- <div ng-include="'partials/_search.html'"></div> -->
 <div class="table-responsive">
+  
+  <form class="form-inline">
+    <div class="form-group">
+      <input ng-model="searchItem" placeholder="Search..." class="form-control">
+    </div>
+  </form>
+
   <table class="table table-hover" id="table-items-list">
     <thead>
           <tr>
@@ -11,7 +19,12 @@
           </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="(key, value) in items" ng-class="{'highlight-red': value.item_quantity == 1}">
+            <tr ng-repeat="value in all_items |
+                           orderBy: 'item_name' |
+                           filter: searchItem | 
+                           offset: currentPage*itemsPerPage |
+                           limitTo: itemsPerPage" 
+                ng-class="{'highlight-red': value.item_quantity == 1}">
               <!-- <td>{{value._id}}</td> -->
               <td>{{ value.item_name }}</td>
               <td>{{ value.partno }}</td>
@@ -19,10 +32,35 @@
               <td>{{ value.item_quantity }}</td>
               <td>
                 <a ng-click="delete(value._id,value._rev)">
-                  <span class="glyphicon glyphicon-remove-sign"></span>
+                  <i class="material-icons">delete_forever</i>
                 </a>
               </td>
             </tr>
         </tbody>
+        <tfoot>
+          <td colspan="5">
+            <div class="pagination">
+              <ul class="pagination">
+                <li ng-class="prevPageDisabled()">
+                  <a href ng-click="prevPage()"> 
+                    <!-- <span><i class="material-icons">navigate_before</i></span> -->
+                    Prev
+                  </a>
+                </li>
+                <li ng-repeat="n in range()" 
+                    ng-class="{active: n == currentPage}"
+                    ng-click="setPage(n)">
+                  <a href="#">{{ n+1 }}</a>
+                </li>
+                <li ng-class="nextPageDisabled()">
+                  <a href ng-click="nextPage()">
+                    Next
+                    <!-- <span><i class="material-icons">navigate_next</i></span> -->
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </td>
+        </tfoot>
   </table>
 </div>

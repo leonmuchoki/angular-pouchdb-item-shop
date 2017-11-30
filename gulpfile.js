@@ -1,231 +1,331 @@
-  var gulp = require('gulp');
+var gulp = require('gulp');
 
-// plugins
-  var connect = require('gulp-connect');
-  var jshint = require('gulp-jshint');
-  var minifyHtml = require('gulp-minify-html');
-  var angularTemplatecache = require('gulp-angular-templatecache');
-  var del = require('del');
-  var useref = require('gulp-useref');
-  var concat = require('gulp-concat');
-  var ngAnnotate = require('gulp-ng-annotate');
-  var uglify = require('gulp-uglify');
+var plugins = require('gulp-load-plugins')();
+var del = require('del');
+var es = require('event-stream');
+var bowerFiles = require('gulp-main-bower-files');
+var Q = require('q');
+var connect = require('gulp-connect');
+var bowerNormalizer = require('gulp-bower-normalize');
+var uglifyjs = require('uglify-js'); // latest uglify to support es6
+var webpack = require('webpack-stream');
+var streamqueue = require('streamqueue');
 
-// var minifycss = require('gulp-minify-css');
-// var clean = require('gulp-clean');
-// var runSequence = require('run-sequence');
-// var browserify = require('browserify');
-// 
-// var mainBowerFiles = require('main-bower-files');
-// var del = require('del');
-// var usemin = require('gulp-usemin');
-
-// var rev = require('gulp-rev');
-// var gutil = require('gulp-util');
-// var ngAnnotate = require('browserify-ngannotate');
-// var sourcemaps = require('gulp-sourcemaps');
-// // var sass = require('gulp-sass');
-// var source = require('vinyl-source-stream');
-// var buffer = require('vinyl-buffer');
-
-// var CacheBuster = require('gulp-cachebust');
-// var cachebust = new CacheBuster();
-
-var config = {
-  js: 'src/**/*.js',
-  html: './src/**/*.html',
-  temp: 'temp/'
+var paths = {
+  scripts:       [
+                  'src/app.js',
+                  'src/creditors/creditor.controller.js',
+                  'src/items/item.controller.js',
+                  'src/nav/navComponent.js',
+                  'src/nav/sideBarComponent.js',
+                  'src/sales/sales.controller.js',
+                  'src/services/pouchdb_service.js',
+                  '!/src/index.html','!src/**/*.html','!src/**/*.css','!src/bower_components/**/*'
+                  ],
+  styles:        ['./src/**/*.css', './src/**/*.scss','!./src/bower_components/**/*'],
+  index:         './src/index.html',
+  partials:       ['./src/**/*.html', '!.src/index.html','!./src/bower_components/**/*'],
+  distDev:   	  './dist.dev',
+  distProd:        './dist/dist.prod',
+  distScriptsProd: './dist/dist.prod/scripts'
 };
 
-var dist = {
-  path: './dist/',
-  images: 'images/'
+//=======PIPE SEGMENTS=========
+
+var pipes = {};
+
+pipes.orderedVendorScripts = function() {
+  return plugins.order([
+                        'bower_components/jquery/dist/jquery.js',
+                        'bower_components/moment/moment.js',
+                        'bower_components/angular/angular.js',
+                        'bower_components/angular-animate/angular-animate.js',
+                        'bower_components/angular-aria/angular-aria.js',
+                        'bower_components/angular-material/angular-material.js',
+                        'bower_components/angular-messages/angular-messages.js',
+                        'bower_components/bootstrap/dist/js/bootstrap.js'
+                        ], 
+                        {base: './dist.dev'}
+                      );
 };
 
-// tasks
-gulp.task('lint', function() {
-  gulp.src(['./src/**/*.js', '!/src/bower_components/**'])
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'))
-    .pipe(jshint.reporter('fail'));
+pipes.orderedAppScripts = function() {
+  return plugins.angularFilesort();
+};
+
+pipes.minifiedFileName = function() {
+  return plugins.rename(function(path) {
+  	path.extname = '.min' + path.extname;
+  });
+};
+
+pipes.validatedAppScripts = function() {
+  return gulp.src(paths.scripts)
+      .pipe(plugins.jshint())
+      .pipe(plugins.jshint.reporter('jshint-stylish'));
+};
+
+pipes.builtAppScriptsDev = function() {
+  return pipes.validatedAppScripts()
+      .pipe(gulp.dest(paths.distDev));
+};
+
+pipes.builtAppScriptsProd = function() {
+  var scriptedPartials = pipes.scriptedPartials();
+  var validatedAppScripts = pipes.validatedAppScripts();
+
+  return es.merge(validatedAppScripts,scriptedPartials)//gulp.src(paths.scripts)//es.merge(validatedAppScripts)
+        .pipe(pipes.orderedAppScripts())
+        //.pipe(plugins.sourcemaps.init())
+          .pipe(plugins.concat('app.min.js'))
+          //.pipe(plugins.uglify())
+        //.pipe(plugins.sourcemaps.write())
+       .pipe(gulp.dest(paths.distScriptsProd));
+};
+
+pipes.builtVendorScriptsDev = function() {
+  return gulp.src('./bower.json')
+      .pipe(bowerFiles( ))
+      //.pipe(pipes.orderedVendorScripts())
+      .pipe(gulp.dest('dist.dev/bower_components'));
+};
+
+pipes.builtVendorScriptsProd = function() {
+  return gulp.src('./bower.json')//gulp.src(bowerFiles('src/bower_components/**/*.js'), {base: "src/bower_components"})
+      .pipe(bowerFiles('**/*.js'))
+      .pipe(pipes.orderedVendorScripts())
+      //.pipe(bowerNormalizer({bowerJson: './bower.json'}))
+      .pipe(plugins.concat('vendor.min.js'))
+      //.pipe(plugins.ngAnnotate())
+      //.pipe(plugins.uglify())
+           //.pipe(webpack())
+      //.pipe(plugins.uglifyJs())
+       .on('error', function(err) { 
+       	                        plugins.util.log(plugins.util.colors.red('[Error]'), err.toString()); 
+       	                        })
+      .pipe(gulp.dest(paths.distScriptsProd));
+};
+
+// fonts
+pipes.builtBootstrapFontsDev = function() {
+  return gulp.src('./src/bower_components/**/*')
+      .pipe(plugins.filter('**/*.{eot,otf,svg,ttf,woff,woff2}'))
+      .pipe(gulp.dest('dist.dev/fonts'));
+};
+
+pipes.validatedPartials = function() {
+  return gulp.src(paths.partials)
+      .pipe(plugins.htmlhint({'doctype-first': false}))
+      .pipe(plugins.htmlhint.reporter());
+};
+
+pipes.builtPartialsDev = function() {
+  return pipes.validatedPartials()
+      .pipe(gulp.dest(paths.distDev));
+};
+
+pipes.scriptedPartials = function() {
+  return pipes.validatedPartials()
+      //.pipe(plugins.htmlhint.failReporter())
+     // .pipe(plugins.htmlmin({collapseWhitespace: true, removeComments: true}))
+      //.pipe(plugins.ngHtml2js({
+      	//moduleName: "NomaSana",
+      	//prefix: "/partials" }));
+};
+
+pipes.builtPartialsProd = function() {
+  return pipes.validatedPartials()
+      .pipe(plugins.htmlhint.failReporter())
+      .pipe(plugins.htmlmin({collapseWhitespace: true, removeComments: true}))
+      .pipe(gulp.dest(paths.distProd));
+};
+
+pipes.builtStylesDev = function() {
+  return gulp.src(paths.styles)
+      .pipe(plugins.sass())
+      .pipe(gulp.dest(paths.distDev));
+};
+
+pipes.builtStylesProd = function() {
+  return gulp.src(paths.styles)
+      .pipe(plugins.sourcemaps.init())
+          .pipe(plugins.sass())
+          .pipe(plugins.minifyCss())
+      .pipe(plugins.sourcemaps.write())
+      .pipe(pipes.minifiedFileName())
+      .pipe(gulp.dest(paths.distProd));
+};
+
+pipes.validatedIndex = function() {
+  return gulp.src(paths.index)
+      .pipe(plugins.htmlhint())
+      .pipe(plugins.htmlhint.reporter())
+};
+
+pipes.builtIndexDev = function() {
+  
+  var orderedVendorScripts = pipes.builtVendorScriptsDev()
+                             .pipe(pipes.orderedVendorScripts());
+
+  var orderedAppScripts = pipes.builtAppScriptsDev()
+      .pipe(pipes.orderedAppScripts());
+
+  var appStyles = pipes.builtStylesDev();
+
+  return pipes.validatedIndex()
+      .pipe(gulp.dest(paths.distDev)) // write first to get relative path for inject
+      .pipe(plugins.inject(orderedVendorScripts, {relative: true, name: 'bower'}))
+      .pipe(plugins.inject(orderedAppScripts, {relative: true}))
+      .pipe(plugins.inject(appStyles, {relative: true}))
+      .pipe(gulp.dest(paths.distDev));
+};
+
+pipes.builtIndexProd = function() {
+  
+  var vendorScripts = pipes.builtVendorScriptsProd();
+  var appScripts = pipes.builtAppScriptsProd();
+  var appStyles = pipes.builtStylesProd();
+  //var appPartials = pipes.builtPartialsProd();
+
+  return pipes.validatedIndex()
+      .pipe(gulp.dest(paths.distProd))
+      .pipe(plugins.inject(vendorScripts, {relative: true, name: 'bower'}))
+      .pipe(plugins.inject(appScripts, {relative: true}))
+      .pipe(plugins.inject(appStyles, {relative: true}))
+      //.pipe(plugins.inject(appPartials, {relative: true}))
+      .pipe(plugins.htmlmin({collapseWhitespace: true, removeComments: true}))
+      .pipe(gulp.dest(paths.distProd))
+};
+
+pipes.builtAppDev = function() {
+  return es.merge(pipes.builtIndexDev(), pipes.builtPartialsDev());
+       // streamqueue({objectMode: false, 
+                  //   pipes.builtIndexDev,
+                  //   pipes.builtPartialsDev
+                //   });
+};
+
+pipes.builtAppProd = function() {
+  return pipes.builtIndexProd();
+};
+
+pipes.orderedmanenos = function() {
+  return pipes.builtAppDev()
+      .pipe(pipes.orderedVendorScripts());
+};
+
+// === TASKS ================
+
+// removes all compiled dev files
+gulp.task('clean-dev', function() {
+  var deferred = Q.defer();
+  del(paths.distDev, function() {
+  	deferred.resolve();
+  });
+  return deferred.promise;
 });
 
-gulp.task('clean', function(cb) {
-  return del([
-    'dist'
-    ], cb)
+// removes all compiled production files
+gulp.task('clean-prod', function() {
+  var deferred = Q.defer();
+  del(paths.distProd, function() {
+  	deferred.resolve();
+  });
+  return deferred.promise;
 });
 
-gulp.task('templatecache', function() {
-  return gulp.src(config.html)
-    .pipe(minifyHtml({empty: true}))
-    .pipe(angularTemplatecache(
-      'templates.js', {
-        module: 'store',
-        standAlone: false,
-        root: 'src/'
-      }))
-    .pipe(gulp.dest(config.temp));
-});
+// checks html source files for syntax errors
+gulp.task('validate-partials', pipes.validatedPartials);
 
-gulp.task('useref', ['clean'], function() {
-  //var assets = useref.assets();  //this was deprecated in new version v3
+// checks index.html for syntax errors
+gulp.task('validate-index', pipes.validatedIndex);
 
-  return gulp.src(['./src/index.html','./src/**/*.html'])
-    //.pipe(assets)
-    //.pipe(assets.restore())
-    .pipe(useref())
-    .pipe(gulp.dest('dist'));
-});
+// moves html source files into the dev enviroment
+gulp.task('build-partials-dev', pipes.builtPartialsDev);
 
-gulp.task('minifyjs', ['useref','templatecache'], function() {
-  return gulp.src(['dist/js/scripts.js', 'temp/templates.js'])
-    .pipe(concat('scripts.js'))
-    .pipe(ngAnnotate())
-    .pipe(uglify())
-    .pipe(gulp.dest('dist/js'));
-});
+// partial proudctions
+gulp.task('build-partials-prod', pipes.builtPartialsProd);
 
-gulp.task('build', ['minifyjs','copy-html-files','connectDist'], function() {
-  //del(config.temp);
-});
+// converts partials to javascript using html2js
+gulp.task('convert-partials-to-js', pipes.scriptedPartials);
 
-//css
-// gulp.task('build-css', ['clean'], function() {
-//   return gulp.src(['/src/**/*','!/src/bower_components/**'])
-//     .pipe(sourcemaps.init())
-//     //.pipe(sass())
-//     .pipe(cachebust.resources())
-//     .pipe(sourcemaps.write('./maps'))
-//     .pipe(gulp.dest('./dist'))
-// });
+// runs jshint on the app scripts
+gulp.task('validate-app-scripts', pipes.validatedAppScripts);
 
-// fills in the Angular template cache, to prevent loading the html templates
-// via separate http requests
-// gulp.task('build-template-cache', ['clean'], function() {
+// moves app scrtips into the dev enviroment
+gulp.task('build-app-scripts-dev', pipes.bultAppScriptsDev);
 
-//   var ngHtml2Js = require("gulp-ng-html2js"),
-//       concat = require("gulp-concat");
+// concatenates, uglifies, and moves app scripts and partials into the prod env
+gulp.task('buld-app-scripts-prod', pipes.builtAppScriptsProd);
 
-//   return gulp.src(["/src/**/*.html","!/src/bower_components/**"])
-//     .pipe(ngHtml2Js)({
-//       moduleName: "storePartials",
-//       prefix: "/partials/"
-//     })
-//     .pipe(concat("templateCachePartials.js"))
-//     .pipe(gulp.dest("./dist"));
-// });
+// compiles app sass and moves to the dev env
+gulp.task('build-styles-dev', pipes.builtStylesDev);
 
-//---------------------------------------------------
-// build a minified Javascript bundle
-//---------------------------------------------------
-// gulp.task('build-js', ['clean'], function() {
-//   var b = browserify({
-//     entries: './src/app.js',
-//     debug: true,
-//     paths: ['./src/**/*.js','!/src/bower_components/**'],
-//     transform: [ngAnnotate]
-//   });
+// compiles and minifies app sass to css and moves to the prod env
+gulp.task('build-styles-prod', pipes.builtStylesProd);
 
-//   return b.bundle()
-//     .pipe(source('bundle.js'))
-//     .pipe(buffer())
-//     .pipe(cachebust.resources())
-//     .pipe(sourcemaps.init({loadMaps: true}))
-//     .pipe(uglify())
-//     .on('error', gutil.log)
-//     .pipe(sourcemaps.write('./'))
-//     .pipe(gulp.dest('./dist/js'));
-// });
+// moves vendor scripts into the dev env
+gulp.task('build-vendor-scripts-dev', pipes.builtVendorScriptsDev);
 
-//------------------------------------------------------------------------
-// full build; applies cache busting to the main page, css and js bundles
-//-------------------------------------------------------------------------
-// gulp.task('build', ['clean', 'build-css','lint','build-js','3rdpartybundle','connectDist'], function() {
-//   return gulp.src('./src/index.html')
-//     .pipe(cachebust.references())
-//     .pipe(gulp.dest('./dist'));
-// });
-// // gulp.task('usemin', function() {
-//   return gulp.src('/src/**/*.html')
-//     .pipe(usemin({
-//       html: [minifyHtml({empty: true, conditionals:true})],
-//       js: [uglify(), 'concat', rev()]
-//     }))
-//     .pipe(gulp.dest('/dist/'));
-// });
+// concatenates, uglifies and moves vendor scripts into the prod env
+gulp.task('build-vendor-scripts-prod', pipes.builtVendorScriptsProd);
 
+// bootstrap fonts dev
+gulp.task('build-bootstrap-fonts-dev', pipes.builtBootstrapFontsDev);
 
+// validates and injects sources into index.html and moves it to the dev env
+gulp.task('build-index-dev', pipes.builtIndexDev);
 
-// gulp.task('minify-css', function() {
-//   var opts = {comments:true,spare:true};
-//   gulp.src(['./src/**/*.css', '!./src/bower_components/**'])
-//     .pipe(minifycss(opts))
-//     .pipe(gulp.dest('./dist/'))
-// });
+// validate and injects sources into the index.html, minifies and moves it to the prod env
+gulp.task('build-index-prod', pipes.builtIndexProd);
 
-// gulp.task('minify-js', function() {
-//   gulp.src(['./src/**/*.js', '!./src/bower_components/**'])
-//     .pipe(gulp.dest('./dist/'))
-// });
+// builds a complete dev env
+gulp.task('build-app-dev', pipes.builtAppDev);
 
-// gulp.task('copy-bower-components', function() {
-//   gulp.src('./src/bower_components/**')
+//manenos
+gulp.task('build-manenos-dev', pipes.orderedmanenos);
 
-//     .pipe(gulp.dest('./dist/bower_components'));
-// });
+// builds a complete prod env
+gulp.task('build-app-prod', ['build-partials-prod'], pipes.builtAppProd);
 
-gulp.task('copy-html-files', function() {
-  gulp.src('src/**/*.html')
-    .pipe(gulp.dest('dist/'));
-});
+// cleans and builds a complete dev env
+gulp.task('clean-build-app-dev', ['clean-dev'], pipes.builtAppDev);
 
-// gulp.task('3rdpartybundle', function() {
-//   return gulp.src('./bower.json')
-//     .pipe(mainBowerFiles( ))
-//     .pipe(uglify())
-//     .pipe(gulp.dest('./dist/bower_components'));
-  // gulp.src(mainBowerFiles())
-  //   .pipe(uglify())
-  //   .pipe(concat('all.min.js'))
-  //   .pipe(gulp.dest('./dist/bower_components'))
-//});
+// cleans and builds a complete prod env
+gulp.task('clean-build-app-prod', ['clean-prod'], pipes.builtAppProd);
 
-// gulp.task('browserify', function() {
-//   gulp.src(['./src/app.js'])
-//     .pipe(browserify({
-//       insertGlobals: true,
-//       debug: true
-//     }))
-//     .pipe(concat('bundled.js'))
-//     .pipe(gulp.dest('.dist/app/js'))
-// });
+// default task builds for prod
+gulp.task('default', ['clean-build-app-prod']);
+
+//kimangoto
+gulp.task('kimangoto', ['clean-dev',
+						'build-partials-dev',
+						'build-app-scripts-dev',
+						'build-styles-dev',
+						'build-vendor-scripts-dev',
+						'build-bootstrap-fonts-dev',
+						'build-index-dev']);
+
+gulp.task('kimangoto-prod', ['buld-app-scripts-prod',
+	                         'build-styles-prod',
+	                         'build-vendor-scripts-prod',
+	                         'build-index-prod']);
 
 gulp.task('connect', function() {
   connect.server({
-  	root: 'src/',
+  	root: 'dist.dev/',
   	port: 8082
   });
 });
 
+// connect prod
 gulp.task('connectDist', function() {
   connect.server({
-  	root: 'dist/',
-  	port: 9999
+  	root: 'dist/dist.prod/',
+  	port: 9999,
+  	middleware: function(connect, opt) {
+  	  return [['src/bower_components',
+  	            connect["static"]('./src/bower_components')]]
+  	}
   });
 });
-
-// default task
-//gulp.task('default',
- // ['lint', 'connect']);
-
-// gulp.task('build', function() {
-//   runSequence(
-//   	['clean'],
-//   	['lint', 'minify-css', 'minify-js', 
-//   	'copy-html-files', 'copy-bower-components', 'connectDist']);
-// });
-
-// gulp.task('build', ['clean'], function() {
-//   runSequence(['usemin'],['connectDist']);
-// });
