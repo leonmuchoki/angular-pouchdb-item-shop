@@ -32,6 +32,14 @@
 
    <!-- inject:js -->
    <!-- endinject -->
-
+   
+   <script>
+     if('serviceWorker' in navigator) {
+        navigator.serviceWorker
+                 .register('/sw.js')
+                 .then(function() { console.log("Sevice Worker Registered"); });
+     }
+   </script>
+   
   </body>
 </html>

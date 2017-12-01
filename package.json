@@ -43,6 +43,7 @@
     "q": "^1.5.1",
     "shelljs": "^0.7.8",
     "streamqueue": "^1.1.1",
+    "sw-precache": "^5.2.0",
     "uglify-es": "^3.1.10",
     "uglify-js": "^3.1.10",
     "webpack-stream": "^4.0.0"

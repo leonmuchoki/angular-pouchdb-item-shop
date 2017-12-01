@@ -14,6 +14,7 @@ var streamqueue = require('streamqueue');
 var paths = {
   scripts:       [
                   'src/app.js',
+                  'src/cache-polyfill.js',
                   'src/creditors/creditor.controller.js',
                   'src/items/item.controller.js',
                   'src/nav/navComponent.js',
@@ -197,12 +198,28 @@ pipes.builtIndexProd = function() {
       .pipe(gulp.dest(paths.distProd))
 };
 
+// use the sw-precache module to generate sw.js
+pipes.builtServiceWorker = function(callback) {
+  var path = require('path');
+  var swPrecache = require('sw-precache');
+  var rootDir = paths.distDev;
+
+  swPrecache.write(path.join(rootDir, 'sw.js'), {
+    staticFileGlobs: [rootDir + '/**/*.{js,html,css,png,jpg,gif}'],
+    stripPrefix: rootDir
+  }, callback);
+};
+
 pipes.builtAppDev = function() {
   return es.merge(pipes.builtIndexDev(), pipes.builtPartialsDev());
        // streamqueue({objectMode: false, 
                   //   pipes.builtIndexDev,
                   //   pipes.builtPartialsDev
                 //   });
+};
+
+pipes.builtAppDevWithServiceWorker = function() {
+  return es.merge(pipes.builtAppDev(), pipes.builtServiceWorker());
 };
 
 pipes.builtAppProd = function() {
@@ -281,6 +298,12 @@ gulp.task('build-index-prod', pipes.builtIndexProd);
 
 // builds a complete dev env
 gulp.task('build-app-dev', pipes.builtAppDev);
+
+//sw
+gulp.task('build-sw', pipes.builtServiceWorker);
+
+//build dev env with service worker
+gulp.task('build-app-dev-sw', ['build-app-dev','build-sw']);
 
 //manenos
 gulp.task('build-manenos-dev', pipes.orderedmanenos);
