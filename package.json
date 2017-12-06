@@ -41,6 +41,7 @@
     "main-bower-files": "^2.13.1",
     "method-override": "^2.3.10",
     "q": "^1.5.1",
+    "run-sequence": "^2.2.0",
     "shelljs": "^0.7.8",
     "streamqueue": "^1.1.1",
     "sw-precache": "^5.2.0",

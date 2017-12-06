@@ -10,6 +10,7 @@ var bowerNormalizer = require('gulp-bower-normalize');
 var uglifyjs = require('uglify-js'); // latest uglify to support es6
 var webpack = require('webpack-stream');
 var streamqueue = require('streamqueue');
+var runSequence = require('run-sequence');
 
 var paths = {
   scripts:       [
@@ -26,6 +27,7 @@ var paths = {
   styles:        ['./src/**/*.css', './src/**/*.scss','!./src/bower_components/**/*'],
   index:         './src/index.html',
   partials:       ['./src/**/*.html', '!.src/index.html','!./src/bower_components/**/*'],
+  favicons:       'src/favicons/*.png',
   distDev:   	  './dist.dev',
   distProd:        './dist/dist.prod',
   distScriptsProd: './dist/dist.prod/scripts'
@@ -157,6 +159,11 @@ pipes.builtStylesProd = function() {
       .pipe(gulp.dest(paths.distProd));
 };
 
+pipes.builtFaviconsDev = function() {
+  return gulp.src(paths.favicons)
+      .pipe(gulp.dest('dist.dev/favicons'));
+};
+
 pipes.validatedIndex = function() {
   return gulp.src(paths.index)
       .pipe(plugins.htmlhint())
@@ -205,9 +212,15 @@ pipes.builtServiceWorker = function(callback) {
   var rootDir = paths.distDev;
 
   swPrecache.write(path.join(rootDir, 'sw.js'), {
-    staticFileGlobs: [rootDir + '/**/*.{js,html,css,png,jpg,gif}'],
+    staticFileGlobs: [rootDir + '/**/*.{js,html,css,png,jpg,gif,ttf,woff,woff2}'],
     stripPrefix: rootDir
   }, callback);
+};
+
+//web app manifest
+pipes.builtManifestDev = function() {
+  return gulp.src('./manifest.json')
+      .pipe(gulp.dest(paths.distDev));
 };
 
 pipes.builtAppDev = function() {
@@ -296,20 +309,26 @@ gulp.task('build-index-dev', pipes.builtIndexDev);
 // validate and injects sources into the index.html, minifies and moves it to the prod env
 gulp.task('build-index-prod', pipes.builtIndexProd);
 
+//favicons
+gulp.task('build-favicons-dev', pipes.builtFaviconsDev);
+
 // builds a complete dev env
-gulp.task('build-app-dev', pipes.builtAppDev);
+gulp.task('build-app-dev', ['build-favicons-dev'], pipes.builtAppDev);
 
 //sw
 gulp.task('build-sw', pipes.builtServiceWorker);
 
-//build dev env with service worker
-gulp.task('build-app-dev-sw', ['build-app-dev','build-sw']);
+//manifest
+gulp.task('build-manifest-dev', pipes.builtManifestDev);
 
 //manenos
 gulp.task('build-manenos-dev', pipes.orderedmanenos);
 
 // builds a complete prod env
 gulp.task('build-app-prod', ['build-partials-prod'], pipes.builtAppProd);
+
+//build dev with sw
+gulp.task('build-app-dev-pwa',['build-app-dev','build-manifest-dev']);
 
 // cleans and builds a complete dev env
 gulp.task('clean-build-app-dev', ['clean-dev'], pipes.builtAppDev);
@@ -333,6 +352,10 @@ gulp.task('kimangoto-prod', ['buld-app-scripts-prod',
 	                         'build-styles-prod',
 	                         'build-vendor-scripts-prod',
 	                         'build-index-prod']);
+
+gulp.task('build-pwa', function() {
+  runSequence(['build-app-dev-pwa'],['build-sw']);
+ });
 
 gulp.task('connect', function() {
   connect.server({
